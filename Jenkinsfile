@@ -9,23 +9,28 @@ pipeline {
     }
     stage('Build') {
       steps {
-        sh 'docker build -t $IMAGE:$BUILD_NUMBER -t $IMAGE:latest .'
+        // Changed 'sh' to 'bat' and used Windows environment variable syntax (%VAR%)
+        bat 'docker build -t %IMAGE%:%BUILD_NUMBER% -t %IMAGE%:latest .'
       }
     }
     stage('Push') {
       steps {
         withCredentials([usernamePassword(credentialsId: 'dockerhub',
             usernameVariable: 'DH_USER', passwordVariable: 'DH_PASS')]) {
-          sh '''
-            echo "$DH_PASS" | docker login -u "$DH_USER" --password-stdin
-            docker push $IMAGE:$BUILD_NUMBER
-            docker push $IMAGE:latest
+          // Changed 'sh' to 'bat'
+          bat '''
+            echo %DH_PASS% | docker login -u "%DH_USER%" --password-stdin
+            docker push %IMAGE%:%BUILD_NUMBER%
+            docker push %IMAGE%:latest
           '''
         }
       }
     }
   }
   post {
-    always { sh 'docker logout || true' }
+    always { 
+      // Changed 'sh' to 'bat'
+      bat 'docker logout || true' 
+    }
   }
 }
