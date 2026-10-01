@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Fleet desk | Tirupati Auto Fleet{% endblock %}
+
+{% block content %}
+<section class="desk-head">
+  <div class="wrap desk-bar">
+    <div>
+      <h1>Fleet desk</h1>
+      <p>Change a driver's status, remove autos and see the latest bookings.</p>
+    </div>
+    <div class="desk-stats">
+      <div><b data-stat="total">{{ stats.total }}</b><span>Registered</span></div>
+      <div><b data-stat="available">{{ stats.available }}</b><span>Available</span></div>
+      <div><b data-stat="busy">{{ stats.busy }}</b><span>On a trip</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section desk">
+  <div class="wrap">
+    <nav class="tabs" aria-label="Filter by stand">
+      <a class="tab {{ 'on' if not current }}" href="{{ url_for('fleet') }}">All stands</a>
+      {% for s in stands %}
+      <a class="tab {{ 'on' if current == s.name }}" href="{{ url_for('fleet', stand=s.name) }}">{{ s.name }}</a>
+      {% endfor %}
+    </nav>
+
+    {% if drivers %}
+    <div class="table-wrap">
+      <table class="fleet-table">
+        <thead><tr><th>Auto</th><th>Driver</th><th>Phone</th><th>Stand</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+        {% for d in drivers %}
+          <tr>
+            <td><span class="plate">{{ d.auto_number }}</span></td>
+            <td>{{ d.driver_name }}</td>
+            <td><a href="tel:{{ d.phone_number }}">{{ d.phone_number }}</a></td>
+            <td>{{ d.stand_location }}</td>
+            <td><button type="button" class="status {{ d.status }} js-toggle" data-id="{{ d.id }}"><span class="dot"></span>{{ d.status }}</button></td>
+            <td><button type="button" class="link-danger js-remove" data-id="{{ d.id }}" data-name="{{ d.driver_name }}">Remove</button></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty"><b>No autos at this stand yet</b>Register a driver from the <a href="{{ url_for('index') }}#join">home page</a>.</div>
+    {% endif %}
+
+    <h2 class="sub">Latest bookings</h2>
+    {% if bookings %}
+    <ul class="bookings">
+      {% for b in bookings %}
+      <li>
+        <span class="plate small">{{ b.auto_number }}</span>
+        <span><b>{{ b.customer_name }}</b> from {{ b.pickup }} to {{ b.destination }}, driver {{ b.driver_name }}</span>
+        <time>{{ b.created_at | ist }}</time>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty"><b>No bookings yet</b>Bookings made on the home page show up here.</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

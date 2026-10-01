@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-shade"></div>
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="live-pill"><span class="pulse" aria-hidden="true"></span><b data-stat="available">{{ stats.available }}</b> autos free right now</p>
+      <h1>An auto at your stand in minutes, from Alipiri to Tirumala.</h1>
+      <p class="lead">Pick where you are standing. We assign the driver who has waited longest at that stand, and you call him directly.</p>
+    </div>
+
+    <form id="book" class="card book-card" autocomplete="off">
+      <h2>Book an auto</h2>
+      <label for="customer_name">Your name</label>
+      <input id="customer_name" name="customer_name" required maxlength="100">
+      <label for="customer_phone">Phone number</label>
+      <input id="customer_phone" name="customer_phone" type="tel" required pattern="[0-9+ ]{10,15}" placeholder="98765 43210" title="10 to 15 digits">
+      <label for="pickup">Pickup stand</label>
+      <select id="pickup" name="pickup">
+        {% for s in stands %}<option>{{ s.name }}</option>{% endfor %}
+      </select>
+      <label for="destination">Where to?</label>
+      <input id="destination" name="destination" required maxlength="150" list="places" placeholder="Tirumala temple">
+      <datalist id="places">
+        <option value="Tirumala temple">
+        <option value="Alipiri footpath">
+        <option value="Tirupati Railway Station">
+        <option value="Tirumala Bus Stand">
+        <option value="Sri Venkateswara Zoo Park">
+      </datalist>
+      <button type="submit" class="btn btn-primary">Find my auto</button>
+      <div id="book-result" aria-live="polite"></div>
+    </form>
+  </div>
+
+  <div class="road" aria-hidden="true">
+    <img class="road-auto" src="{{ url_for('static', filename='img/auto.svg') }}" alt="" width="300" height="183">
+  </div>
+</section>
+
+<section id="stands" class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Where the autos wait</h2>
+      <p>Live count for each stand. It refreshes every few seconds.</p>
+    </div>
+    <div class="stand-grid">
+      {% for s in stands %}
+      <article class="stand">
+        <div class="stand-photo {{ s.key }}" role="img" aria-label="{{ s.name }}"></div>
+        <div class="stand-body">
+          <h3>{{ s.name }}</h3>
+          <p class="muted">{{ s.blurb }}</p>
+          <p class="count"><b data-stand-available="{{ s.key }}">{{ stats.stands[s.key].available }}</b> free
+            <span class="sep"></span><span data-stand-busy="{{ s.key }}">{{ stats.stands[s.key].busy }}</span> on a trip</p>
+          <button type="button" class="btn btn-line" data-pickup="{{ s.name }}">Book from here</button>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section fleet-band">
+  <div class="wrap band-grid">
+    <img class="band-img" src="{{ url_for('static', filename='img/auto.jpg') }}"
+         onerror="this.onerror=null;this.src='{{ url_for('static', filename='img/auto.svg') }}';this.classList.add('is-art')"
+         alt="A Tirupati auto-rickshaw" width="520" height="340">
+    <div>
+      <h2>Every auto is registered and reachable</h2>
+      <p>Each driver in the fleet is listed with his name, auto number and phone number, so you know who is coming before the auto arrives.</p>
+      <ul class="ticks">
+        <li><b data-stat="total">{{ stats.total }}</b> registered autos across three stands</li>
+        <li>Fair turns: the driver who has waited longest is called first</li>
+        <li>Call the driver directly, no middleman</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head"><h2>How it works</h2></div>
+    <ol class="steps">
+      <li><b>Choose your stand.</b> Select Alipiri, Tirumala Bus Stand or the Railway Station.</li>
+      <li><b>Get a driver.</b> The next free auto at that stand is assigned to you.</li>
+      <li><b>Call and go.</b> Phone the driver, meet at the stand and ride.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="join" class="section join">
+  <div class="wrap join-grid">
+    <div>
+      <h2>Drive an auto in Tirupati?</h2>
+      <p>Register once and show up in the live list at your stand. You can switch between Available and Busy from the fleet desk.</p>
+    </div>
+    <form id="join-form" class="card" autocomplete="off">
+      <label for="driver_name">Driver name</label>
+      <input id="driver_name" name="driver_name" required maxlength="100">
+      <label for="auto_number">Auto number</label>
+      <input id="auto_number" name="auto_number" required maxlength="20" placeholder="AP 03 TA 1234">
+      <label for="phone_number">Phone number</label>
+      <input id="phone_number" name="phone_number" type="tel" required pattern="[0-9+ ]{10,15}" placeholder="98765 43210" title="10 to 15 digits">
+      <label for="stand_location">Your stand</label>
+      <select id="stand_location" name="stand_location">
+        {% for s in stands %}<option>{{ s.name }}</option>{% endfor %}
+      </select>
+      <button type="submit" class="btn btn-dark">Register my auto</button>
+      <div id="join-result" aria-live="polite"></div>
+    </form>
+  </div>
+</section>
+{% endblock %}

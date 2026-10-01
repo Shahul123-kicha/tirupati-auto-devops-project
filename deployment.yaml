@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tirupati-auto-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tirupati-auto
+  template:
+    metadata:
+      labels:
+        app: tirupati-auto
+    spec:
+      containers:
+      - name: tirupati-auto-container
+        image: YOURUSER/tirupati-auto-app:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
